@@ -1,4 +1,4 @@
-Bindings for raylib: http://raylib.com
+Nim bindings for [raylib](http://raylib.com).
 
 # Usage
 You must use `raylib` as a shared library.
