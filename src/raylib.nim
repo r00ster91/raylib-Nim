@@ -150,12 +150,12 @@ const
   GAMEPAD_XBOX_BUTTON_HOME* = 8
 
   # Xbox360 USB Controller Axis
-  GAMEPAD_XBOX_AXIS_LEFT_X = 0  ## [-1..1] (left->right)
-  GAMEPAD_XBOX_AXIS_LEFT_Y = 1  ## [1..-1] (up->down)
-  GAMEPAD_XBOX_AXIS_RIGHT_X = 2 ## [-1..1] (left->right)
-  GAMEPAD_XBOX_AXIS_RIGHT_Y = 3 ## [1..-1] (up->down)
-  GAMEPAD_XBOX_AXIS_LT = 4      ## [-1..1] (pressure-level)
-  GAMEPAD_XBOX_AXIS_RT = 5      ## [-1..1] (pressure-level)
+  GAMEPAD_XBOX_AXIS_LEFT_X* = 0  ## [-1..1] (left->right)
+  GAMEPAD_XBOX_AXIS_LEFT_Y* = 1  ## [1..-1] (up->down)
+  GAMEPAD_XBOX_AXIS_RIGHT_X* = 2 ## [-1..1] (left->right)
+  GAMEPAD_XBOX_AXIS_RIGHT_Y* = 3 ## [1..-1] (up->down)
+  GAMEPAD_XBOX_AXIS_LT* = 4      ## [-1..1] (pressure-level)
+  GAMEPAD_XBOX_AXIS_RT* = 5      ## [-1..1] (pressure-level)
 
 type
   Color* = object ## Color type, RGBA (32bit)
@@ -218,18 +218,18 @@ type
     texture*: Texture2D        ## Color buffer attachment texture
     depth*: Texture2D          ## Depth buffer attachment texture
 
-  CharInfo* = object ## SpriteFont character info
+  CharInfo* = object ## Font character info
     value*: cint               ## Character value (Unicode)
     rec*: Rectangle            ## Character rectangle in sprite font
     offsetX*: cint             ## Character offset X when drawing
     offsetY*: cint             ## Character offset Y when drawing
     advanceX*: cint            ## Character advance position X
 
-  SpriteFont* = object ## SpriteFont type, includes texture and charSet array data
+  Font* = object ## Font type, includes texture and charSet array data
     texture*: Texture2D        ## Font texture
     baseSize*: cint            ## Base size (default chars height)
     charsCount*: cint          ## Number of characters
-    chars*: ptr CharInfo        ## Characters info data
+    chars*: ptr CharInfo       ## Characters info data
 
   Camera* = object ## Camera type, defines a camera position/orientation in 3d space
     position*: Vector3         ## Camera position
@@ -536,19 +536,19 @@ proc EndDrawing*()
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## End canvas drawing and swap buffers (double buffering)
 
-proc Begin2dMode*(camera: Camera2D)
+proc BeginMode2D*(camera: Camera2D)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Initialize 2D mode with custom camera (2D)
 
-proc End2dMode*()
+proc EndMode2D*()
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Ends 2D mode with custom camera
 
-proc Begin3dMode*(camera: Camera)
+proc BeginMode3D*(camera: Camera)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Initializes 3D mode with custom camera (3D)
 
-proc End3dMode*()
+proc EndMode3D*()
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Ends 3D mode and returns to default 2D orthographic mode
 
@@ -598,10 +598,6 @@ proc GetColor*(hexValue: cint): Color
 proc Fade*(color: Color; alpha: cfloat): Color
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Color fade-in or fade-out, alpha goes from 0.0f to 1.0f
-
-proc ColorToFloat*(color: Color): ptr cfloat
-  {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Converts Color to float array and normalizes
 
 proc VectorToFloat*(vec: Vector3): ptr cfloat
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
@@ -1072,7 +1068,7 @@ proc ImageText*(text: cstring; fontSize: cint; color: Color): Image
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Create an image from text (default font)
 
-proc ImageTextEx*(font: SpriteFont; text: cstring; fontSize: cfloat; spacing: cint;
+proc ImageTextEx*(font: Font; text: cstring; fontSize: cfloat; spacing: cint;
                  tint: Color): Image
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Create an image from text (custom sprite font)
@@ -1086,7 +1082,7 @@ proc ImageDrawText*(dst: ptr Image; position: Vector2; text: cstring; fontSize: 
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Draw text (default font) within an image (destination)
 
-proc ImageDrawTextEx*(dst: ptr Image; position: Vector2; font: SpriteFont;
+proc ImageDrawTextEx*(dst: ptr Image; position: Vector2; font: Font;
                      text: cstring; fontSize: cfloat; spacing: cint; color: Color)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Draw text (custom sprite font) within an image (destination)
@@ -1158,24 +1154,24 @@ proc DrawTexturePro*(texture: Texture2D; sourceRec: Rectangle; destRec: Rectangl
 ## ------------------------------------------------------------------------------------
 ## Font Loading and Text Drawing Functions (Module: text)
 ## ------------------------------------------------------------------------------------
-## SpriteFont loading/unloading functions
+## Font loading/unloading functions
 
-proc GetDefaultFont*(): SpriteFont
+proc GetDefaultFont*(): Font
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Get the default SpriteFont
+## Get the default Font
 
-proc LoadSpriteFont*(fileName: cstring): SpriteFont
+proc LoadFont*(fileName: cstring): Font
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Load SpriteFont from file into GPU memory (VRAM)
+## Load Font from file into GPU memory (VRAM)
 
-proc LoadSpriteFontEx*(fileName: cstring; fontSize: cint; charsCount: cint;
-                      fontChars: ptr cint): SpriteFont
+proc LoadFontEx*(fileName: cstring; fontSize: cint; charsCount: cint;
+                      fontChars: ptr cint): Font
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Load SpriteFont from file with extended parameters
+## Load Font from file with extended parameters
 
-proc UnloadSpriteFont*(spriteFont: SpriteFont)
+proc UnloadFont*(font: Font)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Unload SpriteFont from GPU memory (VRAM)
+## Unload Font from GPU memory (VRAM)
 ## Text drawing functions
 
 proc DrawFPS*(posX: cint; posY: cint)
@@ -1186,20 +1182,20 @@ proc DrawText*(text: cstring; posX: cint; posY: cint; fontSize: cint; color: Col
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Draw text (using default font)
 
-proc DrawTextEx*(spriteFont: SpriteFont; text: cstring; position: Vector2;
+proc DrawTextEx*(font: Font; text: cstring; position: Vector2;
                 fontSize: cfloat; spacing: cint; tint: Color)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-  ## Draw text using SpriteFont and additional parameters
+  ## Draw text using Font and additional parameters
 ## Text misc. functions
 
 proc MeasureText*(text: cstring; fontSize: cint): cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Measure string width for default font
 
-proc MeasureTextEx*(spriteFont: SpriteFont; text: cstring; fontSize: cfloat;
+proc MeasureTextEx*(font: Font; text: cstring; fontSize: cfloat;
                    spacing: cint): Vector2
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Measure string size for SpriteFont
+## Measure string size for Font
 
 #proc FormatText*(text: cstring): cstring {.varargs.}
 #  {.cdecl, importc, dynlib: LIB_RAYLIB.}
@@ -1396,10 +1392,6 @@ proc CheckCollisionRaySphereEx*(ray: Ray; spherePosition: Vector3;
 proc CheckCollisionRayBox*(ray: Ray; box: BoundingBox): bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Detect collision between ray and box
-
-proc GetCollisionRayMesh*(ray: Ray; mesh: ptr Mesh): RayHitInfo
-  {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Get collision info between ray and mesh
 
 proc GetCollisionRayTriangle*(ray: Ray; p1: Vector3; p2: Vector3; p3: Vector3): RayHitInfo
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
@@ -1715,3 +1707,4 @@ let
   BLANK* = Color(r: 0, g: 0, b: 0, a: 0)             ## Blank (Transparent)
   MAGENTA* = Color(r: 255, g: 0, b: 255, a: 255)     ## Magenta
   RAYWHITE* = Color(r: 245, g: 245, b: 245, a: 255)  ## My own White
+  
