@@ -1,7 +1,7 @@
 [Nim](https://nim-lang.org) bindings for [raylib](http://raylib.com) version 2.0.
 
 # Usage
-You must use `raylib` as a shared library.
+You must use raylib as a shared library.
 
 - On Windows you need `libraylib_shared.dll`
 - On Linux you need `libraylib.so`
