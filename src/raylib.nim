@@ -1,13 +1,10 @@
 {.deadCodeElim: on.}
 when defined(windows):
-  # Windows
   const LIB_RAYLIB = "libraylib_shared.dll"
 elif defined(linux):
-  # Linux
   const LIB_RAYLIB = "libraylib.so"
   {.passL: "-lglfw -lGL -lopenal -lm -lpthread -ldl -lX11 -lXrandr -lXinerama -lXxf86vm -lXcursor".}
 elif defined(macosx):
-  # Mac OS X
   const LIB_RAYLIB = "libraylib.dylib"
   {.passL: "-L. -lraylib".}
 else:
@@ -333,95 +330,81 @@ type
     source*: cuint             ## Audio source id
     buffers*: array[2, cuint]  ## Audio buffers (double buffering)
 
-type LogType* = enum
-  INFO = 0, WARNING, ERROR, DEBUG, OTHER
+  LogType* = enum
+    INFO = 0, WARNING, ERROR, DEBUG, OTHER
 
-## Texture formats
-## NOTE: Support depends on OpenGL version and platform
-type TextureFormat* = enum
-  UNCOMPRESSED_GRAYSCALE = 1, ## 8 bit per pixel (no alpha)
-  UNCOMPRESSED_GRAY_ALPHA,    ## 16 bpp (2 channels)
-  UNCOMPRESSED_R5G6B5,        ## 16 bpp
-  UNCOMPRESSED_R8G8B8,        ## 24 bpp
-  UNCOMPRESSED_R5G5B5A1,      ## 16 bpp (1 bit alpha)
-  UNCOMPRESSED_R4G4B4A4,      ## 16 bpp (4 bit alpha)
-  UNCOMPRESSED_R8G8B8A8,      ## 32 bpp
-  UNCOMPRESSED_R32G32B32,     ## 32 bit per channel (float) - HDR
-  COMPRESSED_DXT1_RGB,        ## 4 bpp (no alpha)
-  COMPRESSED_DXT1_RGBA,       ## 4 bpp (1 bit alpha)
-  COMPRESSED_DXT3_RGBA,       ## 8 bpp
-  COMPRESSED_DXT5_RGBA,       ## 8 bpp
-  COMPRESSED_ETC1_RGB,        ## 4 bpp
-  COMPRESSED_ETC2_RGB,        ## 4 bpp
-  COMPRESSED_ETC2_EAC_RGBA,   ## 8 bpp
-  COMPRESSED_PVRT_RGB,        ## 4 bpp
-  COMPRESSED_PVRT_RGBA,       ## 4 bpp
-  COMPRESSED_ASTC_4x4_RGBA,   ## 8 bpp
-  COMPRESSED_ASTC_8x8_RGBA    ## 2 bpp
+  ## Texture formats
+  ## NOTE: Support depends on OpenGL version and platform
+  TextureFormat* = enum
+    UNCOMPRESSED_GRAYSCALE = 1, ## 8 bit per pixel (no alpha)
+    UNCOMPRESSED_GRAY_ALPHA,    ## 16 bpp (2 channels)
+    UNCOMPRESSED_R5G6B5,        ## 16 bpp
+    UNCOMPRESSED_R8G8B8,        ## 24 bpp
+    UNCOMPRESSED_R5G5B5A1,      ## 16 bpp (1 bit alpha)
+    UNCOMPRESSED_R4G4B4A4,      ## 16 bpp (4 bit alpha)
+    UNCOMPRESSED_R8G8B8A8,      ## 32 bpp
+    UNCOMPRESSED_R32G32B32,     ## 32 bit per channel (float) - HDR
+    COMPRESSED_DXT1_RGB,        ## 4 bpp (no alpha)
+    COMPRESSED_DXT1_RGBA,       ## 4 bpp (1 bit alpha)
+    COMPRESSED_DXT3_RGBA,       ## 8 bpp
+    COMPRESSED_DXT5_RGBA,       ## 8 bpp
+    COMPRESSED_ETC1_RGB,        ## 4 bpp
+    COMPRESSED_ETC2_RGB,        ## 4 bpp
+    COMPRESSED_ETC2_EAC_RGBA,   ## 8 bpp
+    COMPRESSED_PVRT_RGB,        ## 4 bpp
+    COMPRESSED_PVRT_RGBA,       ## 4 bpp
+    COMPRESSED_ASTC_4x4_RGBA,   ## 8 bpp
+    COMPRESSED_ASTC_8x8_RGBA    ## 2 bpp
 
+  ## Texture parameters: filter mode
+  ## NOTE 1: Filtering considers mipmaps if available in the texture
+  ## NOTE 2: Filter is accordingly set for minification and magnification
+  TextureFilterMode* = enum
+    FILTER_POINT = 0,         ## No filter, just pixel aproximation
+    FILTER_BILINEAR,          ## Linear filtering
+    FILTER_TRILINEAR,         ## Trilinear filtering (linear with mipmaps)
+    FILTER_ANISOTROPIC_4X,    ## Anisotropic filtering 4x
+    FILTER_ANISOTROPIC_8X,    ## Anisotropic filtering 8x
+    FILTER_ANISOTROPIC_16X    ## Anisotropic filtering 16x
 
-## Texture parameters: filter mode
-## NOTE 1: Filtering considers mipmaps if available in the texture
-## NOTE 2: Filter is accordingly set for minification and magnification
-
-type TextureFilterMode* = enum
-  FILTER_POINT = 0,         ## No filter, just pixel aproximation
-  FILTER_BILINEAR,          ## Linear filtering
-  FILTER_TRILINEAR,         ## Trilinear filtering (linear with mipmaps)
-  FILTER_ANISOTROPIC_4X,    ## Anisotropic filtering 4x
-  FILTER_ANISOTROPIC_8X,    ## Anisotropic filtering 8x
-  FILTER_ANISOTROPIC_16X    ## Anisotropic filtering 16x
-
-
-## Texture parameters: wrap mode
-
-type TextureWrapMode* = enum
-  WRAP_REPEAT = 0, WRAP_CLAMP, WRAP_MIRROR
+  ## Texture parameters: wrap mode
+  TextureWrapMode* = enum
+    WRAP_REPEAT = 0, WRAP_CLAMP, WRAP_MIRROR
 
 
-## Color blending modes (pre-defined)
-
-type BlendMode* = enum
-  BLEND_ALPHA = 0, BLEND_ADDITIVE, BLEND_MULTIPLIED
-
-
-## Gestures type
-## NOTE: It could be used as flags to enable only some gestures
-
-type Gestures* = enum
-  GESTURE_NONE = 0, GESTURE_TAP = 1, GESTURE_DOUBLETAP = 2, GESTURE_HOLD = 4,
-  GESTURE_DRAG = 8, GESTURE_SWIPE_RIGHT = 16, GESTURE_SWIPE_LEFT = 32,
-  GESTURE_SWIPE_UP = 64, GESTURE_SWIPE_DOWN = 128, GESTURE_PINCH_IN = 256,
-  GESTURE_PINCH_OUT = 512
+  ## Color blending modes (pre-defined)
+  BlendMode* = enum
+    BLEND_ALPHA = 0, BLEND_ADDITIVE, BLEND_MULTIPLIED
 
 
-## Camera system modes
-
-type CameraMode* = enum
-  CAMERA_CUSTOM = 0, CAMERA_FREE, CAMERA_ORBITAL, CAMERA_FIRST_PERSON,
-  CAMERA_THIRD_PERSON
-
-
-## Head Mounted Display devices
-
-type VrDevice* = enum
-  HMD_DEFAULT_DEVICE = 0, HMD_OCULUS_RIFT_DK2, HMD_OCULUS_RIFT_CV1,
-  HMD_VALVE_HTC_VIVE, HMD_SAMSUNG_GEAR_VR, HMD_GOOGLE_CARDBOARD,
-  HMD_SONY_PLAYSTATION_VR, HMD_RAZER_OSVR, HMD_FOVE_VR
+  ## Gestures type
+  ## NOTE: It could be used as flags to enable only some gestures
+  Gestures* = enum
+    GESTURE_NONE = 0, GESTURE_TAP = 1, GESTURE_DOUBLETAP = 2, GESTURE_HOLD = 4,
+    GESTURE_DRAG = 8, GESTURE_SWIPE_RIGHT = 16, GESTURE_SWIPE_LEFT = 32,
+    GESTURE_SWIPE_UP = 64, GESTURE_SWIPE_DOWN = 128, GESTURE_PINCH_IN = 256,
+    GESTURE_PINCH_OUT = 512
 
 
-## RRESData type
-
-type RRESDataType* = enum
-  RRES_TYPE_RAW = 0, RRES_TYPE_IMAGE, RRES_TYPE_WAVE, RRES_TYPE_VERTEX,
-  RRES_TYPE_TEXT, RRES_TYPE_FONT_IMAGE, RRES_TYPE_FONT_CHARDATA, ## CharInfo data array
-  RRES_TYPE_DIRECTORY
+  ## Camera system modes
+  CameraMode* = enum
+    CAMERA_CUSTOM = 0, CAMERA_FREE, CAMERA_ORBITAL, CAMERA_FIRST_PERSON,
+    CAMERA_THIRD_PERSON
 
 
-## ------------------------------------------------------------------------------------
-## Global Variables Definition
-## ------------------------------------------------------------------------------------
-## It's lonely here...
+  ## Head Mounted Display devices
+  VrDevice* = enum
+    HMD_DEFAULT_DEVICE = 0, HMD_OCULUS_RIFT_DK2, HMD_OCULUS_RIFT_CV1,
+    HMD_VALVE_HTC_VIVE, HMD_SAMSUNG_GEAR_VR, HMD_GOOGLE_CARDBOARD,
+    HMD_SONY_PLAYSTATION_VR, HMD_RAZER_OSVR, HMD_FOVE_VR
+
+
+  ## RRESData type
+  RRESDataType* = enum
+    RRES_TYPE_RAW = 0, RRES_TYPE_IMAGE, RRES_TYPE_WAVE, RRES_TYPE_VERTEX,
+    RRES_TYPE_TEXT, RRES_TYPE_FONT_IMAGE, RRES_TYPE_FONT_CHARDATA, ## CharInfo data array
+    RRES_TYPE_DIRECTORY
+
 ## ------------------------------------------------------------------------------------
 ## Window and Graphics Device Functions (Module: core)
 ## ------------------------------------------------------------------------------------
@@ -431,19 +414,19 @@ proc InitWindow*(width: cint; height: cint; title: cstring)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Initialize window and OpenGL context
 
-proc CloseWindow*()
+proc CloseWindow*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Close window and unload OpenGL context
 
-proc WindowShouldClose*(): bool
+proc WindowShouldClose*: bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Check if KEY_ESCAPE pressed or Close icon pressed
 
-proc IsWindowMinimized*(): bool
+proc IsWindowMinimized*: bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Check if window has been minimized (or lost focus)
 
-proc ToggleFullscreen*()
+proc ToggleFullscreen*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Toggle fullscreen mode (only PLATFORM_DESKTOP)
 
@@ -463,32 +446,32 @@ proc SetWindowMinSize*(width: cint; height: cint)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
 
-proc GetScreenWidth*(): cint
+proc GetScreenWidth*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get current screen width
 
-proc GetScreenHeight*(): cint
+proc GetScreenHeight*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get current screen height
 ## Cursor-related functions
 
-proc ShowCursor*()
+proc ShowCursor*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Shows cursor
 
-proc HideCursor*()
+proc HideCursor*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Hides cursor
 
-proc IsCursorHidden*(): bool
+proc IsCursorHidden*: bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Check if cursor is not visible
 
-proc EnableCursor*()
+proc EnableCursor*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Enables cursor (unlock cursor)
 
-proc DisableCursor*()
+proc DisableCursor*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Disables cursor (lock cursor)
 ## Drawing-related functions
@@ -497,11 +480,11 @@ proc ClearBackground*(color: Color)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Set background color (framebuffer clear color)
 
-proc BeginDrawing*()
+proc BeginDrawing*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Setup canvas (framebuffer) to start drawing
 
-proc EndDrawing*()
+proc EndDrawing*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## End canvas drawing and swap buffers (double buffering)
 
@@ -509,7 +492,7 @@ proc BeginMode2D*(camera: Camera2D)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Initialize 2D mode with custom camera (2D)
 
-proc EndMode2D*()
+proc EndMode2D*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Ends 2D mode with custom camera
 
@@ -517,7 +500,7 @@ proc BeginMode3D*(camera: Camera)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Initializes 3D mode with custom camera (3D)
 
-proc EndMode3D*()
+proc EndMode3D*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Ends 3D mode and returns to default 2D orthographic mode
 
@@ -525,7 +508,7 @@ proc BeginTextureMode*(target: RenderTexture2D)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Initializes render texture for drawing
 
-proc EndTextureMode*()
+proc EndTextureMode*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Ends drawing to render texture
 ## Screen-space-related functions
@@ -547,11 +530,11 @@ proc SetTargetFPS*(fps: cint)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Set target FPS (maximum)
 
-proc GetFPS*(): cint
+proc GetFPS*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Returns current FPS
 
-proc GetFrameTime*(): cfloat
+proc GetFrameTime*: cfloat
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Returns time in seconds for last frame drawn
 ## Color-related functions
@@ -570,14 +553,14 @@ proc Fade*(color: Color; alpha: cfloat): Color
 
 proc VectorToFloat*(vec: Vector3): ptr cfloat
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Converts Vector3 to cfloat array
+## Converts Vector3 to float array
 
 proc MatrixToFloat*(mat: Matrix): ptr cfloat
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Converts Matrix to cfloat array
+## Converts Matrix to float array
 ## Misc. functions
 
-proc ShowLogo*()
+proc ShowLogo*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Activate raylib logo at startup (can be done with flags)
 
@@ -585,8 +568,8 @@ proc SetConfigFlags*(flags: char)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Setup window configuration flags (view FLAGS)
 
-#proc TraceLog*(logType: cint; text: cstring) {.varargs.}
-#  {.cdecl, importc, dynlib: LIB_RAYLIB.}
+proc TraceLog*(logType: cint; text: cstring)
+  {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Show trace log messages (INFO, WARNING, ERROR, DEBUG)
 
 proc TakeScreenshot*(fileName: cstring)
@@ -606,7 +589,7 @@ proc GetDirectoryPath*(fileName: cstring): cstring
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get directory for a given fileName (with path)
 
-proc GetWorkingDirectory*(): cstring
+proc GetWorkingDirectory*: cstring
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get current working directory
 
@@ -614,7 +597,7 @@ proc ChangeDirectory*(dir: cstring): bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Change working directory, returns true if success
 
-proc IsFileDropped*(): bool
+proc IsFileDropped*: bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Check if a file has been dropped into window
 
@@ -622,18 +605,19 @@ proc GetDroppedFiles*(count: ptr cint): cstringArray
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get dropped files names
 
-proc ClearDroppedFiles*()
+proc ClearDroppedFiles*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Clear dropped files paths buffer
 ## Persistent storage management
 
 proc StorageSaveValue*(position: cint; value: cint)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Save cinteger value to storage file (to defined position)
+## Save integer value to storage file (to defined position)
 
 proc StorageLoadValue*(position: cint): cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Load cinteger value from storage file (from defined position)
+## Load integer value from storage file (from defined position)
+
 ## ------------------------------------------------------------------------------------
 ## Input Handling Functions (Module: core)
 ## ------------------------------------------------------------------------------------
@@ -655,7 +639,7 @@ proc IsKeyUp*(key: cint): bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Detect if a key is NOT being pressed
 
-proc GetKeyPressed*(): cint
+proc GetKeyPressed*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get latest key pressed
 
@@ -692,7 +676,7 @@ proc IsGamepadButtonUp*(gamepad: cint; button: cint): bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Detect if a gamepad button is NOT being pressed
 
-proc GetGamepadButtonPressed*(): cint
+proc GetGamepadButtonPressed*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get the last gamepad button pressed
 
@@ -721,15 +705,15 @@ proc IsMouseButtonUp*(button: cint): bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Detect if a mouse button is NOT being pressed
 
-proc GetMouseX*(): cint
+proc GetMouseX*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Returns mouse position X
 
-proc GetMouseY*(): cint
+proc GetMouseY*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Returns mouse position Y
 
-proc GetMousePosition*(): Vector2
+proc GetMousePosition*: Vector2
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Returns mouse position XY
 
@@ -737,22 +721,23 @@ proc SetMousePosition*(position: Vector2)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Set mouse position XY
 
-proc GetMouseWheelMove*(): cint
+proc GetMouseWheelMove*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Returns mouse wheel movement Y
 ## Input-related functions: touch
 
-proc GetTouchX*(): cint
+proc GetTouchX*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Returns touch position X for touch point 0 (relative to screen size)
 
-proc GetTouchY*(): cint
+proc GetTouchY*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Returns touch position Y for touch point 0 (relative to screen size)
 
 proc GetTouchPosition*(index: cint): Vector2
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Returns touch position XY for a touch point index (relative to screen size)
+
 ## ------------------------------------------------------------------------------------
 ## Gestures and Touch Handling Functions (Module: gestures)
 ## ------------------------------------------------------------------------------------
@@ -765,33 +750,34 @@ proc IsGestureDetected*(gesture: cint): bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Check if a gesture have been detected
 
-proc GetGestureDetected*(): cint
+proc GetGestureDetected*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get latest detected gesture
 
-proc GetTouchPointsCount*(): cint
+proc GetTouchPointsCount*: cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get touch points count
 
-proc GetGestureHoldDuration*(): cfloat
+proc GetGestureHoldDuration*: cfloat
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get gesture hold time in milliseconds
 
-proc GetGestureDragVector*(): Vector2
+proc GetGestureDragVector*: Vector2
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get gesture drag vector
 
-proc GetGestureDragAngle*(): cfloat
+proc GetGestureDragAngle*: cfloat
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get gesture drag angle
 
-proc GetGesturePinchVector*(): Vector2
+proc GetGesturePinchVector*: Vector2
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get gesture pinch delta
 
-proc GetGesturePinchAngle*(): cfloat
+proc GetGesturePinchAngle*: cfloat
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get gesture pinch angle
+
 ## ------------------------------------------------------------------------------------
 ## Camera System Functions (Module: camera)
 ## ------------------------------------------------------------------------------------
@@ -820,6 +806,7 @@ proc SetCameraMoveControls*(frontKey: cint; backKey: cint; rightKey: cint;
                            leftKey: cint; upKey: cint; downKey: cint)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Set camera move controls (1st person and 3rd person cameras)
+
 ## ------------------------------------------------------------------------------------
 ## Basic Shapes Drawing Functions (Module: shapes)
 ## ------------------------------------------------------------------------------------
@@ -942,6 +929,7 @@ proc CheckCollisionPointCircle*(point: Vector2; center: Vector2; radius: cfloat)
 proc CheckCollisionPointTriangle*(point: Vector2; p1: Vector2; p2: Vector2; p3: Vector2): bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Check if point is inside a triangle
+
 ## ------------------------------------------------------------------------------------
 ## Texture Loading and Drawing Functions (Module: textures)
 ## ------------------------------------------------------------------------------------
@@ -1119,13 +1107,14 @@ proc DrawTextureRec*(texture: Texture2D; sourceRec: Rectangle; position: Vector2
 proc DrawTexturePro*(texture: Texture2D; sourceRec: Rectangle; destRec: Rectangle;
                     origin: Vector2; rotation: cfloat; tint: Color)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-  ## Draw a part of a texture defined by a rectangle with 'pro' parameters
+## Draw a part of a texture defined by a rectangle with 'pro' parameters
+
 ## ------------------------------------------------------------------------------------
 ## Font Loading and Text Drawing Functions (Module: text)
 ## ------------------------------------------------------------------------------------
 ## Font loading/unloading functions
 
-proc GetDefaultFont*(): Font
+proc GetDefaultFont*: Font
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get the default Font
 
@@ -1166,13 +1155,14 @@ proc MeasureTextEx*(font: Font; text: cstring; fontSize: cfloat;
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Measure string size for Font
 
-#proc FormatText*(text: cstring): cstring {.varargs.}
-#  {.cdecl, importc, dynlib: LIB_RAYLIB.}
+proc FormatText*(text: cstring): cstring
+  {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Formatting of text with variables to 'embed'
 
 proc SubText*(text: cstring; position: cint; length: cint): cstring
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get a piece of a text string
+
 ## ------------------------------------------------------------------------------------
 ## Basic 3d Shapes Drawing Functions (Module: models)
 ## ------------------------------------------------------------------------------------
@@ -1246,6 +1236,7 @@ proc DrawGizmo*(position: Vector3)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Draw simple gizmo
 ## DrawTorus(), DrawTeapot() could be useful?
+
 ## ------------------------------------------------------------------------------------
 ## Model 3d Loading and Drawing Functions (Module: models)
 ## ------------------------------------------------------------------------------------
@@ -1289,7 +1280,7 @@ proc LoadMaterial*(fileName: cstring): Material
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Load material from file
 
-proc LoadDefaultMaterial*(): Material
+proc LoadDefaultMaterial*: Material
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Load default material (uses default models shader)
 
@@ -1369,6 +1360,7 @@ proc GetCollisionRayTriangle*(ray: Ray; p1: Vector3; p2: Vector3; p3: Vector3): 
 proc GetCollisionRayGround*(ray: Ray; groundHeight: cfloat): RayHitInfo
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get collision info between ray and ground plane (Y-normal plane)
+
 ## ------------------------------------------------------------------------------------
 ## Shaders System Functions (Module: rlgl)
 ## NOTE: This functions are useless when using OpenGL 1.1
@@ -1387,11 +1379,11 @@ proc UnloadShader*(shader: Shader)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Unload shader from GPU memory (VRAM)
 
-proc GetDefaultShader*(): Shader
+proc GetDefaultShader*: Shader
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get default shader
 
-proc GetDefaultTexture*(): Texture2D
+proc GetDefaultTexture*: Texture2D
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Get default texture
 ## Shader configuration functions
@@ -1425,7 +1417,7 @@ proc BeginShaderMode*(shader: Shader)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Begin custom shader drawing
 
-proc EndShaderMode*()
+proc EndShaderMode*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## End custom shader drawing (use default shader)
 
@@ -1433,7 +1425,7 @@ proc BeginBlendMode*(mode: cint)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Begin blending mode (alpha, additive, multiplied)
 
-proc EndBlendMode*()
+proc EndBlendMode*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## End blending mode (reset to default: alpha blending)
 ## VR control functions
@@ -1442,11 +1434,11 @@ proc InitVrSimulator*(vrDevice: cint)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Init VR simulator for selected device
 
-proc CloseVrSimulator*()
+proc CloseVrSimulator*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Close VR simulator for current device
 
-proc IsVrSimulatorReady*(): bool
+proc IsVrSimulatorReady*: bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Detect if VR simulator is ready
 
@@ -1454,31 +1446,32 @@ proc UpdateVrTracking*(camera: ptr Camera)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Update VR tracking (position and orientation) and camera
 
-proc ToggleVrMode*()
+proc ToggleVrMode*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Enable/Disable VR experience
 
-proc BeginVrDrawing*()
+proc BeginVrDrawing*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Begin VR simulator stereo rendering
 
-proc EndVrDrawing*()
+proc EndVrDrawing*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## End VR simulator stereo rendering
+
 ## ------------------------------------------------------------------------------------
 ## Audio Loading and Playing Functions (Module: audio)
 ## ------------------------------------------------------------------------------------
 ## Audio device management functions
 
-proc InitAudioDevice*()
+proc InitAudioDevice*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Initialize audio device and context
 
-proc CloseAudioDevice*()
+proc CloseAudioDevice*
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Close the audio device and context
 
-proc IsAudioDeviceReady*(): bool
+proc IsAudioDeviceReady*: bool
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Check if audio device has been initialized successfully
 
