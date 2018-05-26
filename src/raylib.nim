@@ -1,14 +1,14 @@
 {.deadCodeElim: on.}
 when defined(windows):
   # Windows
-  const LIB_RAYLIB* = "libraylib_shared.dll"
+  const LIB_RAYLIB = "libraylib_shared.dll"
 elif defined(linux):
   # Linux
-  const LIB_RAYLIB* = "libraylib.so"
+  const LIB_RAYLIB = "libraylib.so"
   {.passL: "-lglfw -lGL -lopenal -lm -lpthread -ldl -lX11 -lXrandr -lXinerama -lXxf86vm -lXcursor".}
 elif defined(macosx):
   # Mac OS X
-  const LIB_RAYLIB* = "libraylib.dylib"
+  const LIB_RAYLIB = "libraylib.dylib"
   {.passL: "-L. -lraylib".}
 else:
   {.error: "Your OS is not supported".}
@@ -282,7 +282,7 @@ type
   MaterialMap* = object
     texture*: Texture2D      ## Material map texture
     color*: Color            ## Material map color
-    value*: float            ## Material map value
+    value*: cfloat           ## Material map value
 
   Material* = object
     shader*: Shader            ## Standard shader (supports 3 map textures)
@@ -333,120 +333,89 @@ type
     source*: cuint             ## Audio source id
     buffers*: array[2, cuint]  ## Audio buffers (double buffering)
 
-  RRESData* = object ## rRES data returned when reading a resource,
-                     ## it contains all required data for user (24 byte)
-    `type`*: cuint             ## Resource type (4 byte)
-    param1*: cuint             ## Resouce parameter 1 (4 byte)
-    param2*: cuint             ## Resouce parameter 2 (4 byte)
-    param3*: cuint             ## Resouce parameter 3 (4 byte)
-    param4*: cuint             ## Resouce parameter 4 (4 byte)
-    data*: pointer             ## Resource data pointer (4 byte)
-  
-
-## RRES type (pointer to RRESData array)
-
-type
-  RRES* = ptr RRESData
-
-## ----------------------------------------------------------------------------------
-## Enumerators Definition
-## ----------------------------------------------------------------------------------
-## Trace log type
-
-type
-  LogType* = enum
-    INFO = 0, WARNING, ERROR, DEBUG, OTHER
-
+type LogType* = enum
+  INFO = 0, WARNING, ERROR, DEBUG, OTHER
 
 ## Texture formats
 ## NOTE: Support depends on OpenGL version and platform
-
-type
-  TextureFormat* = enum
-    UNCOMPRESSED_GRAYSCALE = 1, ## 8 bit per pixel (no alpha)
-    UNCOMPRESSED_GRAY_ALPHA,  ## 16 bpp (2 channels)
-    UNCOMPRESSED_R5G6B5,      ## 16 bpp
-    UNCOMPRESSED_R8G8B8,      ## 24 bpp
-    UNCOMPRESSED_R5G5B5A1,    ## 16 bpp (1 bit alpha)
-    UNCOMPRESSED_R4G4B4A4,    ## 16 bpp (4 bit alpha)
-    UNCOMPRESSED_R8G8B8A8,    ## 32 bpp
-    UNCOMPRESSED_R32G32B32,   ## 32 bit per channel (float) - HDR
-    COMPRESSED_DXT1_RGB,      ## 4 bpp (no alpha)
-    COMPRESSED_DXT1_RGBA,     ## 4 bpp (1 bit alpha)
-    COMPRESSED_DXT3_RGBA,     ## 8 bpp
-    COMPRESSED_DXT5_RGBA,     ## 8 bpp
-    COMPRESSED_ETC1_RGB,      ## 4 bpp
-    COMPRESSED_ETC2_RGB,      ## 4 bpp
-    COMPRESSED_ETC2_EAC_RGBA, ## 8 bpp
-    COMPRESSED_PVRT_RGB,      ## 4 bpp
-    COMPRESSED_PVRT_RGBA,     ## 4 bpp
-    COMPRESSED_ASTC_4x4_RGBA, ## 8 bpp
-    COMPRESSED_ASTC_8x8_RGBA  ## 2 bpp
+type TextureFormat* = enum
+  UNCOMPRESSED_GRAYSCALE = 1, ## 8 bit per pixel (no alpha)
+  UNCOMPRESSED_GRAY_ALPHA,    ## 16 bpp (2 channels)
+  UNCOMPRESSED_R5G6B5,        ## 16 bpp
+  UNCOMPRESSED_R8G8B8,        ## 24 bpp
+  UNCOMPRESSED_R5G5B5A1,      ## 16 bpp (1 bit alpha)
+  UNCOMPRESSED_R4G4B4A4,      ## 16 bpp (4 bit alpha)
+  UNCOMPRESSED_R8G8B8A8,      ## 32 bpp
+  UNCOMPRESSED_R32G32B32,     ## 32 bit per channel (float) - HDR
+  COMPRESSED_DXT1_RGB,        ## 4 bpp (no alpha)
+  COMPRESSED_DXT1_RGBA,       ## 4 bpp (1 bit alpha)
+  COMPRESSED_DXT3_RGBA,       ## 8 bpp
+  COMPRESSED_DXT5_RGBA,       ## 8 bpp
+  COMPRESSED_ETC1_RGB,        ## 4 bpp
+  COMPRESSED_ETC2_RGB,        ## 4 bpp
+  COMPRESSED_ETC2_EAC_RGBA,   ## 8 bpp
+  COMPRESSED_PVRT_RGB,        ## 4 bpp
+  COMPRESSED_PVRT_RGBA,       ## 4 bpp
+  COMPRESSED_ASTC_4x4_RGBA,   ## 8 bpp
+  COMPRESSED_ASTC_8x8_RGBA    ## 2 bpp
 
 
 ## Texture parameters: filter mode
 ## NOTE 1: Filtering considers mipmaps if available in the texture
 ## NOTE 2: Filter is accordingly set for minification and magnification
 
-type
-  TextureFilterMode* = enum
-    FILTER_POINT = 0,           ## No filter, just pixel aproximation
-    FILTER_BILINEAR,          ## Linear filtering
-    FILTER_TRILINEAR,         ## Trilinear filtering (linear with mipmaps)
-    FILTER_ANISOTROPIC_4X,    ## Anisotropic filtering 4x
-    FILTER_ANISOTROPIC_8X,    ## Anisotropic filtering 8x
-    FILTER_ANISOTROPIC_16X    ## Anisotropic filtering 16x
+type TextureFilterMode* = enum
+  FILTER_POINT = 0,         ## No filter, just pixel aproximation
+  FILTER_BILINEAR,          ## Linear filtering
+  FILTER_TRILINEAR,         ## Trilinear filtering (linear with mipmaps)
+  FILTER_ANISOTROPIC_4X,    ## Anisotropic filtering 4x
+  FILTER_ANISOTROPIC_8X,    ## Anisotropic filtering 8x
+  FILTER_ANISOTROPIC_16X    ## Anisotropic filtering 16x
 
 
 ## Texture parameters: wrap mode
 
-type
-  TextureWrapMode* = enum
-    WRAP_REPEAT = 0, WRAP_CLAMP, WRAP_MIRROR
+type TextureWrapMode* = enum
+  WRAP_REPEAT = 0, WRAP_CLAMP, WRAP_MIRROR
 
 
 ## Color blending modes (pre-defined)
 
-type
-  BlendMode* = enum
-    BLEND_ALPHA = 0, BLEND_ADDITIVE, BLEND_MULTIPLIED
+type BlendMode* = enum
+  BLEND_ALPHA = 0, BLEND_ADDITIVE, BLEND_MULTIPLIED
 
 
 ## Gestures type
 ## NOTE: It could be used as flags to enable only some gestures
 
-type
-  Gestures* = enum
-    GESTURE_NONE = 0, GESTURE_TAP = 1, GESTURE_DOUBLETAP = 2, GESTURE_HOLD = 4,
-    GESTURE_DRAG = 8, GESTURE_SWIPE_RIGHT = 16, GESTURE_SWIPE_LEFT = 32,
-    GESTURE_SWIPE_UP = 64, GESTURE_SWIPE_DOWN = 128, GESTURE_PINCH_IN = 256,
-    GESTURE_PINCH_OUT = 512
+type Gestures* = enum
+  GESTURE_NONE = 0, GESTURE_TAP = 1, GESTURE_DOUBLETAP = 2, GESTURE_HOLD = 4,
+  GESTURE_DRAG = 8, GESTURE_SWIPE_RIGHT = 16, GESTURE_SWIPE_LEFT = 32,
+  GESTURE_SWIPE_UP = 64, GESTURE_SWIPE_DOWN = 128, GESTURE_PINCH_IN = 256,
+  GESTURE_PINCH_OUT = 512
 
 
 ## Camera system modes
 
-type
-  CameraMode* = enum
-    CAMERA_CUSTOM = 0, CAMERA_FREE, CAMERA_ORBITAL, CAMERA_FIRST_PERSON,
-    CAMERA_THIRD_PERSON
+type CameraMode* = enum
+  CAMERA_CUSTOM = 0, CAMERA_FREE, CAMERA_ORBITAL, CAMERA_FIRST_PERSON,
+  CAMERA_THIRD_PERSON
 
 
 ## Head Mounted Display devices
 
-type
-  VrDevice* = enum
-    HMD_DEFAULT_DEVICE = 0, HMD_OCULUS_RIFT_DK2, HMD_OCULUS_RIFT_CV1,
-    HMD_VALVE_HTC_VIVE, HMD_SAMSUNG_GEAR_VR, HMD_GOOGLE_CARDBOARD,
-    HMD_SONY_PLAYSTATION_VR, HMD_RAZER_OSVR, HMD_FOVE_VR
+type VrDevice* = enum
+  HMD_DEFAULT_DEVICE = 0, HMD_OCULUS_RIFT_DK2, HMD_OCULUS_RIFT_CV1,
+  HMD_VALVE_HTC_VIVE, HMD_SAMSUNG_GEAR_VR, HMD_GOOGLE_CARDBOARD,
+  HMD_SONY_PLAYSTATION_VR, HMD_RAZER_OSVR, HMD_FOVE_VR
 
 
 ## RRESData type
 
-type
-  RRESDataType* = enum
-    RRES_TYPE_RAW = 0, RRES_TYPE_IMAGE, RRES_TYPE_WAVE, RRES_TYPE_VERTEX,
-    RRES_TYPE_TEXT, RRES_TYPE_FONT_IMAGE, RRES_TYPE_FONT_CHARDATA, ## CharInfo data array
-    RRES_TYPE_DIRECTORY
+type RRESDataType* = enum
+  RRES_TYPE_RAW = 0, RRES_TYPE_IMAGE, RRES_TYPE_WAVE, RRES_TYPE_VERTEX,
+  RRES_TYPE_TEXT, RRES_TYPE_FONT_IMAGE, RRES_TYPE_FONT_CHARDATA, ## CharInfo data array
+  RRES_TYPE_DIRECTORY
 
 
 ## ------------------------------------------------------------------------------------
@@ -601,11 +570,11 @@ proc Fade*(color: Color; alpha: cfloat): Color
 
 proc VectorToFloat*(vec: Vector3): ptr cfloat
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Converts Vector3 to float array
+## Converts Vector3 to cfloat array
 
 proc MatrixToFloat*(mat: Matrix): ptr cfloat
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Converts Matrix to float array
+## Converts Matrix to cfloat array
 ## Misc. functions
 
 proc ShowLogo*()
@@ -660,11 +629,11 @@ proc ClearDroppedFiles*()
 
 proc StorageSaveValue*(position: cint; value: cint)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Save integer value to storage file (to defined position)
+## Save cinteger value to storage file (to defined position)
 
 proc StorageLoadValue*(position: cint): cint
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
-## Load integer value from storage file (from defined position)
+## Load cinteger value from storage file (from defined position)
 ## ------------------------------------------------------------------------------------
 ## Input Handling Functions (Module: core)
 ## ------------------------------------------------------------------------------------
@@ -910,7 +879,7 @@ proc DrawRectanglePro*(rec: Rectangle; origin: Vector2; rotation: cfloat; color:
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Draw a color-filled rectangle with pro parameters
 
-proc DrawRectangleGradient*(posX: cint; posY: cint; width: cint; height: cint;
+proc DrawRectangleGradientH*(posX: cint; posY: cint; width: cint; height: cint;
                            color1: Color; color2: Color)
   {.cdecl, importc, dynlib: LIB_RAYLIB.}
 ## Draw a gradient-filled rectangle
@@ -1707,4 +1676,3 @@ let
   BLANK* = Color(r: 0, g: 0, b: 0, a: 0)             ## Blank (Transparent)
   MAGENTA* = Color(r: 255, g: 0, b: 255, a: 255)     ## Magenta
   RAYWHITE* = Color(r: 245, g: 245, b: 245, a: 255)  ## My own White
-  

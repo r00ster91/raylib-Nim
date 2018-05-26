@@ -1,22 +1,17 @@
-import raylib as rl
+import raylib
 
-proc main()=
-  let
-    screenWidth = 800.cint
-    screenHeight = 450.cint
+let
+  screenWidth = 800.cint
+  screenHeight = 450.cint
 
-  rl.InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window")
+InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window")
 
-  while not rl.WindowShouldClose():
-    rl.BeginDrawing()
+while not WindowShouldClose():
+  BeginDrawing()
 
-    rl.ClearBackground(rl.RAYWHITE)
-    rl.DrawText("Congrats! You created your first window!", 190, 200, 20, rl.LIGHTGRAY)
+  ClearBackground(RAYWHITE)
+  DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY)
 
-    rl.EndDrawing()
+  EndDrawing()
 
-  rl.CloseWindow()
-
-
-
-main()
+CloseWindow()
