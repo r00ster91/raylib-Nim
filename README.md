@@ -13,5 +13,4 @@ Your source file must share the same location as the shared library.
 
 # Notes
 - Desktop only for now (no iOS, Android or Web).
-- There isn't a documentation yet but i'm working on it.
-  For now you can use [this cheatsheet](http://www.raylib.com/cheatsheet/cheatsheet.html).
+- There isn't a documentation yet. For now you can use [this cheatsheet](http://www.raylib.com/cheatsheet/cheatsheet.html).
